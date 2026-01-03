@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Venezuela Freedom News</title>
+    <style>
+        :root {
+            --gold: #FCBF49;
+            --blue: #003893;
+            --red: #CF142B;
+            --dark: #1a1a2e;
+            --card-bg: #16213e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: linear-gradient(90deg, var(--gold) 0%, var(--blue) 50%, var(--red) 100%);
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .breaking-banner {
+            background: linear-gradient(90deg, #ff0000, #cc0000);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            position: sticky;
+            top: 85px;
+            z-index: 99;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            min-width: 70px;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--gold);
+            background: rgba(252, 191, 73, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-left: 4px solid var(--gold);
+        }
+
+        .card h3 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .card p {
+            color: #ccc;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .card .source {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .card a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .card .time {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .event-card {
+            border-left-color: var(--blue);
+        }
+
+        .event-card .event-date {
+            background: var(--blue);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .event-card .location {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .celebration-card {
+            border-left-color: #00ff00;
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0,100,0,0.2) 100%);
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(252, 191, 73, 0.4);
+            z-index: 101;
+        }
+
+        .last-updated {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff0000;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .status-banner {
+            background: linear-gradient(90deg, #004400, #006600);
+            padding: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .status-banner strong {
+            color: var(--gold);
+        }
+
+        .news-sources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .source-link {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            color: #aaa;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .source-link:hover {
+            background: rgba(252, 191, 73, 0.2);
+            color: var(--gold);
+        }
+
+        .hero-section {
+            padding: 20px;
+            text-align: center;
+            background: rgba(0,100,0,0.2);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .hero-section h2 {
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .flag-emoji {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        .social-embed {
+            background: #000;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .social-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            color: white;
+        }
+
+        .twitter-btn { background: #1DA1F2; }
+        .reddit-btn { background: #FF4500; }
+        .facebook-btn { background: #4267B2; }
+        .youtube-btn { background: #FF0000; }
+        .google-btn { background: #4285F4; }
+        .tiktok-btn { background: linear-gradient(45deg, #00f2ea, #ff0050); }
+        .eventbrite-btn { background: #F05537; }
+
+        .search-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .search-section h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .hashtag {
+            display: inline-block;
+            background: rgba(29, 161, 242, 0.2);
+            color: #1DA1F2;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        iframe {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            min-height: 400px;
+        }
+
+        .embed-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🇻🇪 Venezuela Freedom Tracker</h1>
+        <div class="subtitle">Live News, Social Media & DC Events</div>
+    </header>
+
+    <div class="breaking-banner">
+        <span class="live-indicator"></span>
+        BREAKING: Maduro Captured by U.S. Forces - January 3, 2026
+    </div>
+
+    <div class="hero-section">
+        <div class="flag-emoji">🇻🇪 🦅 🇺🇸</div>
+        <h2>LIBERTAD!</h2>
+        <p>Nicolás Maduro captured and removed from Venezuela</p>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('news')">📰 News</div>
+        <div class="tab" onclick="showTab('social')">📱 Social</div>
+        <div class="tab" onclick="showTab('events')">📍 Events</div>
+        <div class="tab" onclick="showTab('live')">🔴 Live</div>
+    </div>
+
+    <div id="news" class="tab-content active">
+        <div class="card">
+            <div class="time">🔴 LIVE - January 3, 2026</div>
+            <h3>U.S. Captures Maduro in "Operation Absolute Resolve"</h3>
+            <p>President Trump announced that U.S. forces captured Venezuelan President Nicolás Maduro and his wife Cilia Flores during large-scale strikes on Caracas. Maduro is reportedly aboard the USS Iwo Jima and facing narco-terrorism charges.</p>
+            <div class="news-sources">
+                <a href="https://www.cnn.com/world/live-news/venezuela-explosions-caracas-intl-hnk-01-03-26" class="source-link" target="_blank">CNN</a>
+                <a href="https://www.cbsnews.com/live-updates/venezuela-us-military-strikes-maduro-trump/" class="source-link" target="_blank">CBS News</a>
+                <a href="https://www.npr.org/2026/01/03/g-s1-104329/explosions-caracas-venezuela" class="source-link" target="_blank">NPR</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="time">Today - Morning</div>
+            <h3>Trump: "We're Going to Run the Country"</h3>
+            <p>Speaking from Mar-a-Lago, President Trump said the U.S. will administer Venezuela "until a proper transition can take place." He defended the military strikes and said he wasn't "afraid of boots on the ground."</p>
+            <div class="news-sources">
+                <a href="https://www.npr.org/2026/01/03/g-s1-104346/trump-venezuela-maduro-press-conference" class="source-link" target="_blank">NPR</a>
+                <a href="https://www.foxnews.com/live-news/us-strikes-venezuela-maduro-captured-january-3-2026" class="source-link" target="_blank">Fox News</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="time">Today</div>
+            <h3>AG Bondi: Maduro Charged with Narco-Terrorism</h3>
+            <p>Attorney General Pam Bondi announced that Maduro and his wife have been indicted on charges including narco-terrorism conspiracy, cocaine importation conspiracy, and weapons offenses.</p>
+            <div class="news-sources">
+                <a href="https://www.cnbc.com/2026/01/03/trump-us-operation-captured-venezuela-president-nicolas-maduro.html" class="source-link" target="_blank">CNBC</a>
+                <a href="https://abcnews.go.com/International/explosions-heard-venezuelas-capital-city-caracas/story?id=128861598" class="source-link" target="_blank">ABC News</a>
+            </div>
+        </div>
+
+        <div class="card celebration-card">
+            <div class="time">Today - Early Morning</div>
+            <h3>🎉 Venezuelans Celebrate Across U.S.</h3>
+            <p>Hundreds of Venezuelans gathered in Doral, Florida. Crowds chanted "Libertad!" and sang both U.S. and Venezuelan national anthems. Similar celebrations in Madrid and other diaspora communities worldwide.</p>
+            <div class="news-sources">
+                <a href="https://www.local10.com/news/local/2026/01/03/hundreds-of-venezuelans-gather-in-doral-to-celebrate-maduros-capture-by-us/" class="source-link" target="_blank">Local 10</a>
+                <a href="https://www.cbsnews.com/miami/news/miami-doral-weston-venezuela-community-reactions-nicolas-maduro-capture-trump/" class="source-link" target="_blank">CBS Miami</a>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h3>🔍 Search Latest News</h3>
+            <a href="https://news.google.com/search?q=maduro+captured+venezuela&hl=en-US" class="social-btn google-btn" target="_blank">
+                📰 Google News - Maduro Captured
+            </a>
+            <a href="https://news.google.com/search?q=venezuela+celebration+diaspora&hl=en-US" class="social-btn google-btn" target="_blank">
+                🎉 Google News - Venezuela Celebrations
+            </a>
+        </div>
+    </div>
+
+    <div id="social" class="tab-content">
+        <div class="search-section">
+            <h3>🐦 Twitter/X - Live Search</h3>
+            <p style="color: #888; margin-bottom: 15px;">Tap to search trending hashtags and keywords:</p>
+
+            <a href="https://twitter.com/search?q=%23VenezuelaLibre&src=typed_query&f=live" class="social-btn twitter-btn" target="_blank">
+                #VenezuelaLibre (Live)
+            </a>
+            <a href="https://twitter.com/search?q=%23Libertad%20venezuela&src=typed_query&f=live" class="social-btn twitter-btn" target="_blank">
+                #Libertad Venezuela (Live)
+            </a>
+            <a href="https://twitter.com/search?q=maduro%20captured&src=typed_query&f=live" class="social-btn twitter-btn" target="_blank">
+                "Maduro Captured" (Live)
+            </a>
+            <a href="https://twitter.com/search?q=venezuela%20celebration&src=typed_query&f=live" class="social-btn twitter-btn" target="_blank">
+                Venezuela Celebration (Live)
+            </a>
+            <a href="https://twitter.com/search?q=venezuela%20washington%20dc&src=typed_query&f=live" class="social-btn twitter-btn" target="_blank">
+                Venezuela Washington DC (Live)
+            </a>
+            <a href="https://twitter.com/search?q=%23SOSVenezuela&src=typed_query&f=live" class="social-btn twitter-btn" target="_blank">
+                #SOSVenezuela (Live)
+            </a>
+        </div>
+
+        <div class="search-section">
+            <h3>📱 TikTok - Live Videos</h3>
+            <a href="https://www.tiktok.com/search?q=venezuela%20maduro%20captured" class="social-btn tiktok-btn" target="_blank">
+                🎵 TikTok: Maduro Captured
+            </a>
+            <a href="https://www.tiktok.com/search?q=venezuela%20libertad%20celebration" class="social-btn tiktok-btn" target="_blank">
+                🎵 TikTok: Venezuela Libertad
+            </a>
+            <a href="https://www.tiktok.com/search?q=venezuelan%20american%20reaction" class="social-btn tiktok-btn" target="_blank">
+                🎵 TikTok: Venezuelan American Reactions
+            </a>
+        </div>
+
+        <div class="search-section">
+            <h3>🔴 Reddit - Live Discussions</h3>
+            <a href="https://www.reddit.com/search/?q=venezuela%20maduro&sort=new" class="social-btn reddit-btn" target="_blank">
+                r/all - Venezuela Maduro (New)
+            </a>
+            <a href="https://www.reddit.com/r/worldnews/search/?q=venezuela&sort=new" class="social-btn reddit-btn" target="_blank">
+                r/worldnews - Venezuela (New)
+            </a>
+            <a href="https://www.reddit.com/r/venezuela/new/" class="social-btn reddit-btn" target="_blank">
+                r/venezuela (Latest Posts)
+            </a>
+            <a href="https://www.reddit.com/r/washingtondc/search/?q=venezuela&sort=new" class="social-btn reddit-btn" target="_blank">
+                r/washingtondc - Venezuela Events
+            </a>
+        </div>
+
+        <div class="search-section">
+            <h3>📘 Facebook - Events & Groups</h3>
+            <a href="https://www.facebook.com/search/events?q=venezuela%20washington%20dc" class="social-btn facebook-btn" target="_blank">
+                🎉 FB Events: Venezuela DC
+            </a>
+            <a href="https://www.facebook.com/search/groups?q=venezuelan%20washington%20dc" class="social-btn facebook-btn" target="_blank">
+                👥 FB Groups: Venezuelan DC
+            </a>
+            <a href="https://www.facebook.com/search/posts?q=venezuela%20celebration" class="social-btn facebook-btn" target="_blank">
+                📝 FB Posts: Venezuela Celebration
+            </a>
+        </div>
+
+        <div class="search-section">
+            <h3>▶️ YouTube - Live & Recent Videos</h3>
+            <a href="https://www.youtube.com/results?search_query=venezuela+maduro+captured&sp=CAISAhAB" class="social-btn youtube-btn" target="_blank">
+                🔴 YouTube Live: Maduro Captured
+            </a>
+            <a href="https://www.youtube.com/results?search_query=venezuela+celebration+2026&sp=CAI%253D" class="social-btn youtube-btn" target="_blank">
+                📺 YouTube: Venezuela Celebrations (Recent)
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>📌 Trending Hashtags to Follow</h3>
+            <div style="margin-top: 10px;">
+                <span class="hashtag">#VenezuelaLibre</span>
+                <span class="hashtag">#Libertad</span>
+                <span class="hashtag">#MaduroCaptured</span>
+                <span class="hashtag">#FreeVenezuela</span>
+                <span class="hashtag">#SOSVenezuela</span>
+                <span class="hashtag">#VenezuelaLiberty</span>
+                <span class="hashtag">#OperationAbsoluteResolve</span>
+                <span class="hashtag">#Venezuela</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="events" class="tab-content">
+        <h2 style="padding: 10px 0; color: var(--gold);">📍 Washington DC Area Events</h2>
+
+        <div class="search-section">
+            <h3>🔍 Search for Events Near DC</h3>
+            <a href="https://www.eventbrite.com/d/dc--washington/venezuela/" class="social-btn eventbrite-btn" target="_blank">
+                🎟️ Eventbrite: Venezuela Events in DC
+            </a>
+            <a href="https://www.facebook.com/search/events?q=venezuela%20washington%20dc%20celebration" class="social-btn facebook-btn" target="_blank">
+                📘 Facebook Events: Venezuela DC
+            </a>
+            <a href="https://www.meetup.com/find/?keywords=venezuelan&location=us--dc--Washington" class="social-btn" style="background: #ED1C40;" target="_blank">
+                👥 Meetup: Venezuelan Groups DC
+            </a>
+            <a href="https://twitter.com/search?q=venezuela%20rally%20washington%20dc&f=live" class="social-btn twitter-btn" target="_blank">
+                🐦 Twitter: Venezuela Rally DC (Live)
+            </a>
+        </div>
+
+        <div class="card event-card celebration-card">
+            <div class="event-date">📅 CHECK SOCIAL MEDIA</div>
+            <h3>🎉 Venezuelan Community Celebrations</h3>
+            <p>Major celebrations happening in South Florida - expect similar events to be organized in DC! Check the social media links above for real-time updates on gatherings.</p>
+            <div class="location">📍 DC Metro Area - Monitor social media for spontaneous gatherings</div>
+        </div>
+
+        <div class="card event-card">
+            <div class="event-date">📅 January 3, 2026 - 1:00 PM - 4:00 PM</div>
+            <h3>Emergency DC Action at White House</h3>
+            <p>CODEPINK event. <strong>Note: This is an anti-war protest opposing the military action - NOT a celebration.</strong></p>
+            <div class="location">📍 The White House, 1600 Pennsylvania Ave NW</div>
+            <div class="news-sources">
+                <a href="https://www.codepink.org/vzdc26" class="source-link" target="_blank">Event Info</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>💡 Tips for Finding Celebration Events</h3>
+            <p>
+                <strong>Best places to check:</strong><br><br>
+                ✅ Search Twitter for "Venezuela DC" or "Venezuelan Washington"<br><br>
+                ✅ Check Facebook Events for "Venezuela celebration Washington"<br><br>
+                ✅ Search "venezuelan restaurant washington dc" - they often host gatherings<br><br>
+                ✅ Look for Venezuelan churches in the DMV area<br><br>
+                ✅ Monitor local news (WUSA9, FOX5 DC, NBC4) for gathering announcements
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>🏪 Venezuelan Gathering Spots in DC Area</h3>
+            <p>
+                These locations may have community gatherings:<br><br>
+                • Venezuelan restaurants in NoVA (Arlington, Falls Church)<br>
+                • Latino cultural centers<br>
+                • Churches with Venezuelan congregations<br>
+                • Embassy Row area (may have gatherings near Venezuelan embassy)
+            </p>
+            <a href="https://www.google.com/maps/search/venezuelan+restaurant+washington+dc" class="social-btn google-btn" target="_blank" style="margin-top: 15px;">
+                🗺️ Find Venezuelan Restaurants Near DC
+            </a>
+        </div>
+    </div>
+
+    <div id="live" class="tab-content">
+        <h2 style="padding: 10px 0; color: var(--gold);">🔴 Live News & Streams</h2>
+
+        <div class="search-section">
+            <h3>📺 Live News Streams</h3>
+            <a href="https://www.cnn.com/world/live-news/venezuela-explosions-caracas-intl-hnk-01-03-26" class="social-btn" style="background: #CC0000;" target="_blank">
+                CNN Live Updates
+            </a>
+            <a href="https://www.cbsnews.com/live-updates/venezuela-us-military-strikes-maduro-trump/" class="social-btn" style="background: #003366;" target="_blank">
+                CBS News Live
+            </a>
+            <a href="https://www.nbcnews.com/world/latin-america/live-blog/venezuela-explosions-trump-maduro-live-updates-rcna251053" class="social-btn" style="background: #FF6600;" target="_blank">
+                NBC News Live
+            </a>
+            <a href="https://www.foxnews.com/live-news/us-strikes-venezuela-maduro-captured-january-3-2026" class="social-btn" style="background: #003366;" target="_blank">
+                Fox News Live
+            </a>
+            <a href="https://www.aljazeera.com/news/liveblog/2026/1/3/live-loud-noises-heard-in-venezuelas-capital-amid-us-tensions" class="social-btn" style="background: #FA9000;" target="_blank">
+                Al Jazeera Live
+            </a>
+        </div>
+
+        <div class="search-section">
+            <h3>▶️ YouTube Live Streams</h3>
+            <a href="https://www.youtube.com/results?search_query=venezuela+live&sp=EgJAAQ%253D%253D" class="social-btn youtube-btn" target="_blank">
+                🔴 YouTube: Venezuela (Live Now)
+            </a>
+            <a href="https://www.youtube.com/results?search_query=maduro+captured+live" class="social-btn youtube-btn" target="_blank">
+                🔴 YouTube: Maduro News (Live)
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>⏱️ Timeline of Events</h3>
+            <p>
+                <strong>~2:00 AM (Caracas):</strong> Explosions and aircraft heard<br><br>
+                <strong>Early Morning:</strong> Trump announces Maduro captured on Truth Social<br><br>
+                <strong>Morning:</strong> Trump addresses nation from Mar-a-Lago<br><br>
+                <strong>Morning:</strong> AG Bondi announces charges<br><br>
+                <strong>Ongoing:</strong> Celebrations in South Florida, worldwide diaspora<br><br>
+                <strong>1:00 PM:</strong> Anti-war protest at White House
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>📡 Official Accounts to Follow</h3>
+            <p>
+                <a href="https://twitter.com/ABORIN_USA" target="_blank" style="color: var(--gold);">@ABOLRIN_USA</a> - Venezuelan opposition<br><br>
+                <a href="https://twitter.com/StateDept" target="_blank" style="color: var(--gold);">@StateDept</a> - US State Department<br><br>
+                <a href="https://twitter.com/SecRubio" target="_blank" style="color: var(--gold);">@SecRubio</a> - Secretary of State<br><br>
+                Local DC news: @fox5dc, @waborc9, @nbcwashington
+            </p>
+        </div>
+    </div>
+
+    <div class="last-updated" id="lastUpdated">
+        Last updated: Loading...
+    </div>
+
+    <button class="refresh-btn" onclick="refreshPage()">🔄</button>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            document.querySelector(`.tab-content#${tabId}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent =
+                'Last updated: ' + now.toLocaleTimeString() + ' - Tap 🔄 to refresh';
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        // Update time on load
+        updateTime();
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            location.reload();
+        }, 300000);
+    </script>
+</body>
+</html>
