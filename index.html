@@ -366,54 +366,21 @@
     </div>
 
     <div id="news" class="tab-content active">
-        <div class="card">
-            <div class="time">🔴 LIVE - January 3, 2026</div>
-            <h3>U.S. Captures Maduro in "Operation Absolute Resolve"</h3>
-            <p>President Trump announced that U.S. forces captured Venezuelan President Nicolás Maduro and his wife Cilia Flores during large-scale strikes on Caracas. Maduro is reportedly aboard the USS Iwo Jima and facing narco-terrorism charges.</p>
-            <div class="news-sources">
-                <a href="https://www.cnn.com/world/live-news/venezuela-explosions-caracas-intl-hnk-01-03-26" class="source-link" target="_blank">CNN</a>
-                <a href="https://www.cbsnews.com/live-updates/venezuela-us-military-strikes-maduro-trump/" class="source-link" target="_blank">CBS News</a>
-                <a href="https://www.npr.org/2026/01/03/g-s1-104329/explosions-caracas-venezuela" class="source-link" target="_blank">NPR</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="time">Today - Morning</div>
-            <h3>Trump: "We're Going to Run the Country"</h3>
-            <p>Speaking from Mar-a-Lago, President Trump said the U.S. will administer Venezuela "until a proper transition can take place." He defended the military strikes and said he wasn't "afraid of boots on the ground."</p>
-            <div class="news-sources">
-                <a href="https://www.npr.org/2026/01/03/g-s1-104346/trump-venezuela-maduro-press-conference" class="source-link" target="_blank">NPR</a>
-                <a href="https://www.foxnews.com/live-news/us-strikes-venezuela-maduro-captured-january-3-2026" class="source-link" target="_blank">Fox News</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="time">Today</div>
-            <h3>AG Bondi: Maduro Charged with Narco-Terrorism</h3>
-            <p>Attorney General Pam Bondi announced that Maduro and his wife have been indicted on charges including narco-terrorism conspiracy, cocaine importation conspiracy, and weapons offenses.</p>
-            <div class="news-sources">
-                <a href="https://www.cnbc.com/2026/01/03/trump-us-operation-captured-venezuela-president-nicolas-maduro.html" class="source-link" target="_blank">CNBC</a>
-                <a href="https://abcnews.go.com/International/explosions-heard-venezuelas-capital-city-caracas/story?id=128861598" class="source-link" target="_blank">ABC News</a>
-            </div>
-        </div>
-
-        <div class="card celebration-card">
-            <div class="time">Today - Early Morning</div>
-            <h3>🎉 Venezuelans Celebrate Across U.S.</h3>
-            <p>Hundreds of Venezuelans gathered in Doral, Florida. Crowds chanted "Libertad!" and sang both U.S. and Venezuelan national anthems. Similar celebrations in Madrid and other diaspora communities worldwide.</p>
-            <div class="news-sources">
-                <a href="https://www.local10.com/news/local/2026/01/03/hundreds-of-venezuelans-gather-in-doral-to-celebrate-maduros-capture-by-us/" class="source-link" target="_blank">Local 10</a>
-                <a href="https://www.cbsnews.com/miami/news/miami-doral-weston-venezuela-community-reactions-nicolas-maduro-capture-trump/" class="source-link" target="_blank">CBS Miami</a>
+        <div class="search-section">
+            <h3>🔴 Live News Feed</h3>
+            <p style="color: #888; margin-bottom: 10px;">Auto-updating from Google News</p>
+            <div id="live-news-feed">
+                <div class="loading">Loading latest Venezuela news</div>
             </div>
         </div>
 
         <div class="search-section">
             <h3>🔍 Search Latest News</h3>
-            <a href="https://news.google.com/search?q=maduro+captured+venezuela&hl=en-US" class="social-btn google-btn" target="_blank">
-                📰 Google News - Maduro Captured
+            <a href="https://news.google.com/search?q=venezuela+maduro&hl=en-US" class="social-btn google-btn" target="_blank">
+                📰 Google News - Venezuela Maduro
             </a>
-            <a href="https://news.google.com/search?q=venezuela+celebration+diaspora&hl=en-US" class="social-btn google-btn" target="_blank">
-                🎉 Google News - Venezuela Celebrations
+            <a href="https://news.google.com/search?q=venezuela+washington+dc&hl=en-US" class="social-btn google-btn" target="_blank">
+                📍 Google News - Venezuela DC
             </a>
         </div>
     </div>
@@ -656,10 +623,87 @@
         // Update time on load
         updateTime();
 
-        // Auto-refresh every 5 minutes
-        setInterval(() => {
-            location.reload();
-        }, 300000);
+        // Fetch live news from RSS feeds via rss2json API
+        async function fetchNews() {
+            const feedContainer = document.getElementById('live-news-feed');
+
+            // Using rss2json.com free API to convert Google News RSS to JSON
+            const rssUrl = 'https://news.google.com/rss/search?q=venezuela+maduro&hl=en-US&gl=US&ceid=US:en';
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.items && data.items.length > 0) {
+                    let html = '';
+
+                    // Show up to 10 news items
+                    data.items.slice(0, 10).forEach(item => {
+                        const date = new Date(item.pubDate);
+                        const timeAgo = getTimeAgo(date);
+                        const source = item.author || extractSource(item.title);
+
+                        html += `
+                            <div class="card">
+                                <div class="time">${timeAgo}</div>
+                                <h3>${cleanTitle(item.title)}</h3>
+                                <p>${item.description ? stripHtml(item.description).substring(0, 200) + '...' : ''}</p>
+                                <div class="news-sources">
+                                    <a href="${item.link}" class="source-link" target="_blank">${source} ➜</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    feedContainer.innerHTML = html;
+                } else {
+                    throw new Error('No items found');
+                }
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                feedContainer.innerHTML = `
+                    <div class="card">
+                        <h3>📰 Latest News</h3>
+                        <p>Tap the buttons below to search for the latest Venezuela news on Google News.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return '🔴 Just now';
+            if (diffMins < 60) return `🔴 ${diffMins} min ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        }
+
+        function extractSource(title) {
+            const match = title.match(/ - ([^-]+)$/);
+            return match ? match[1].trim() : 'Read more';
+        }
+
+        function cleanTitle(title) {
+            return title.replace(/ - [^-]+$/, '').trim();
+        }
+
+        function stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        // Load news on page load
+        fetchNews();
+
+        // Refresh news every 5 minutes
+        setInterval(fetchNews, 300000);
     </script>
 </body>
 </html>
